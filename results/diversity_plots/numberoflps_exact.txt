@@ -1,0 +1,13 @@
+afrotheria	1111
+amphibia	869
+artiodactyla	3431
+aves	7061
+carnivore	6400
+chiroptera	2373
+lagomorpha	701
+marsupials	2180
+perissodactyla	767
+primates	6274
+rodents	5848
+squamata	3100
+testudines	1259
