@@ -1,0 +1,2 @@
+###The significantly positively-selected sites mentioned in the final output compiled files represents the coordinates according to the MUSCLE alignment with those specific species with 100 bootstraps using GUIDANCE program.
+###IF a user changes the number of species in the multifasta file, or use some other aligner, the alignment can change and can result in different coordinates for positively-selected sites.
