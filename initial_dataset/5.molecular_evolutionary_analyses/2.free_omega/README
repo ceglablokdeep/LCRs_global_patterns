@@ -1,0 +1,7 @@
+##This folder contains a directory aln_files_and_trees which contains a directory alnfiles_trees having all the aln files and species trees ##184271 aln files and 184271 trees
+##making conf files for PAML to calculate separate omegas for each branch
+###to calculate free omega for each branch in the tree using PAML, it is necessary to make model = 1; fix_omega = 0. You can use CodonFreq = 2 as codon frequency table (F3X4).
+##I have made a demo control file with necessary parameters to run free ratio using PAML, I will use this file to run PAML on all the aln files.
+cp demo.ctl ../aln_files_and_trees/alnfiles_trees/
+cd /path/to/alnfiles_trees
+ls |grep ".nwk" > inputfilenames  ##184271
