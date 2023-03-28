@@ -1,0 +1,32 @@
+###Many of the input files I am unable to upload here because of their size (even after zipping) or quantity.
+A brief summary of important missing files is as follows:
+
+In folder "initial_datasets":
+  1.gene_related:
+    sorted_all_gene_pro_ac (179MB) zipped size: 41MB
+  3.aligned_and_tree_pruning:
+    sorted_all_gene_pro_ac (179MB)
+  4.flps_related:
+    all_flps_output_combined (1.1GB)
+    all_flps_output_with_gene_clade_name (1.3GB)
+    all_flps_output_with_xp_xm_gene_sp_clade (169MB)
+    
+In folder "results":
+  aa_lps_density:
+    all the flps out with clade files
+  omega_comparison:
+    all_clades_flps_out_combined (1.2GB)
+    all_omega_compiled (119MB)
+    all_sp_gene_clade_aligned (96MB)
+    flps_output_aligned_with_gene_name (1.2GB)
+    sorted_all_gene_pro_ac (179MB)
+  overlapping_histogram:
+    multiple files
+  pss_lcr_alignment.plot:
+    alndensity_normalized.txt (1.3GB)
+    cladwise_correlation_coverage:
+      "$clade"_aln.txt (all files around 1GB)
+      alndensity_withnormposition_cladewise.txt (9.5GB)
+      
+These files are provided in the Mendley dataset.
+Please visit the Mendley dataset for futher detailed information.
