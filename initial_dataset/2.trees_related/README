@@ -1,0 +1,27 @@
+###The birds tree was downloaded from Birdtree.org with 1000 bootstraps and is processed using sumtrees.py
+grep "tree_" output.nex |awk '{print $4}' > onlytrees.nwk
+sumtrees.py --rooted --ultrametric --ultrametricity-precision 10000 onlytrees.nwk > birds_mrc.tre
+cat birds_mrc.tre |sed -e 's/\[[^][]*\]//g' > bird_mrc_tree_cleaned.tre
+tail -n3 bird_mrc_tree_cleaned.tre |head -n1|awk '{print $4}' > birds_final.tre
+cp birds_final.tre aves_list.nwk
+sed -i 's/1.00000000//g' aves_list.nwk
+
+##All the remaining species tree for clades were downloaded from TimeTree.org and are saved as "clade"_list.nwk
+##NOTE: if the tree happen to have internode labels (denoted by numbers in single quotes), then remove them as PAML make its own internode labels
+for t in `ls *_list.nwk`
+do
+sed -e "s/'[^()]*'//g" "$t" > temp.nwk
+mv temp.nwk "$t"
+done
+
+
+###After the above cleaning, you can run the following script to get the unrooted trees:
+for i in `ls *nwk`
+do
+j=`echo $i|sed 's/.nwk/_unrooted.nwk/g'`
+echo 'library(ape)'  > unroot_tree.r
+echo 'a<-read.tree("'$i'")' >> unroot_tree.r
+echo 'b<-unroot(a)' >> unroot_tree.r
+echo 'write.tree(b,file="'$j'")' >> unroot_tree.r
+Rscript unroot_tree.r
+done
