@@ -1,0 +1,120 @@
+##Initial protein coding gene list is downloaded from Ensembl on 16 November, 2021 with headers "Gene_name NCBI_gene_ID Gene_type"
+##It has a total of 19619 genes in the list and was saved in a file named mybiomart_list.txt.
+##The list was filtered out of Mitochondria genes, and readthrough and other such factors:
+grep -v "^MT-" mybiomart_list.txt |awk 'NF==3{print $0}'|grep -v "^LINC"|grep -v "-"|awk '{print $1,$2}' > final_protein_coding_list
+##This list has a total of 19125 genes
+###we list the genes with available gene IDs
+##we need Gene IDs to provide as an input to datasets command line
+split -d --additional-suffix=_species.txt -l 100 final_protein_coding_list
+for i in `ls *_species.txt`
+do
+while read j
+do
+gene=`echo $j|awk '{print $1}'`
+geneid=`echo $j|awk '{print $2}'`
+echo $gene $geneid
+( datasets download ortholog gene-id "$geneid" --filename "$gene".zip ) &
+done < "$i"
+wait
+done
+
+##We retrieved the datasets for the genes which were available to download. For some gene IDs, the diwnload keep on giving error even after multiple attempts.
+##The total number of protein coding genes retrieved are 18586
+for i in `ls -1 *zip`
+do
+gene=`echo $i|sed 's/.zip//g'`
+unzip -o "$i"
+mv ncbi_dataset/ "$gene"_dataset/
+done
+
+##Out of all the 18586 zip files, we were able to unzip only 18407 while others stopped with an error.
+##18407 totalunzipped_protein_codinggenes
+###########Below mentioned script subset each gene in cladewise manner by selecting the most similar CDSs for each available species for each clade#####
+###The script assumes that you are in "all_datasets directory and have fulfilled all the below mentioned requirements##########
+###########################################REQUIREMENTS######################################
+
+##1. list of clade species (with extension *_list) in a folder adjacent to "all_datasets" folder
+##2. consen.py: python3 script to make consensus sequence from aligned sequences
+##3. needle and muscle program to be installed on your system
+##Run it in the folder where all the downloaded datasets are
+##all_datasets directory contains all the unzipped directory downloaded from NCBI for protein coding genes with names as : ZZZ3_dataset
+##Each directory genename_dataset has a directory "data" which contains files like: data_report.jsonl  dataset_catalog.json  data_table.tsv  gene.fna  protein.faa  rna.fna
+##For first objective, we are mainly focussing on file protein.faa for each gene
+for dirs in `ls -d all_datasets/*_dataset`
+do
+cp consen.py "$dirs"/data/consen.py
+cp cladelist/* "$dirs"/data/
+done
+cd all_datasets
+for dir in `ls -d *_dataset`
+do
+gene=`echo $dir|sed 's/_dataset//g'`
+cd "$dir"/data
+cat protein.faa|sed '/>/s/ .*organism=/_/1'|sed '/>/s/].*//g'|sed 's/ /_/g'|awk '{print $1}'|sed '/>/s/$/@/g'|tr -d "\n"|sed 's/>/\n>/g'|sed '1d'|sed 's/@/\n/g' > onelineramino.seqs
+grep -A1 ">NP_" onelineramino.seqs|grep -v "\-\-"|grep -v ">"|awk '{print length()}' > length_distribution
+grep -A1 ">NP_" onelineramino.seqs|grep -v "\-\-" > npseqs
+grep -A1 ">NP_" onelineramino.seqs|grep -v "\-\-"|grep ">"|sed 's/>//g' > npheaders
+echo "a=read.table('length_distribution',header=F)" > length.R
+echo "b=summary(a)" >> length.R
+echo "write.table(b,file='quartile',quote=F,col.names=F,row.names=F)" >> length.R
+Rscript length.R
+first_quart=`grep "1st" quartile|awk '{print $2}' FS=:`
+third_quart=`grep "3rd" quartile|awk '{print $2}' FS=:`
+while read header
+do
+sequence=`grep -A1 "$header" npseqs|tail -n1`
+j=`echo $sequence|wc -c`
+echo $first_quart $third_quart $sequence $header |awk 'length($3) >= $1 && length($3) <= $2 {print $4,$3}' OFS="\n" >> rangelength.fa
+done < npseqs
+
+muscle -in rangelength.fa -out rangelengthaligned.aln
+sed -e '/>/s/$/#/g' rangelengthaligned.aln|tr -d '\n'|sed -e 's/>/\n>/g' -e 's/#/\n/g'|sed '1d'|grep -v ">" > alignedblock.txt
+python3 consen.py alignedblock.txt aminoconsen
+sed -i 's/-//g' aminoconsen_consensus.txt
+wc -c aminoconsen_consensus.txt
+sed -i '1 i\>reference' aminoconsen_consensus.txt
+reflen=`cat aminoconsen_consensus.txt|tail -n1|wc -c`
+ref=`cat aminoconsen_consensus.txt|tail -n1`
+for clade in `ls *_list`
+do
+for i in `cat $clade`
+do
+score=0
+grep "$i" onelineramino.seqs > temp.txt
+j=`wc -l temp.txt|awk '{print $1}'`
+if [ $j -eq 1 ]
+then
+accession=`grep "$i" onelineramino.seqs`
+seq=`grep -A1 "$accession" onelineramino.seqs|tail -n1`
+echo -e "$accession\n$seq" >> "$gene"_"$clade"_orf.fa
+elif [ $j -gt 1 ]
+then
+grep -A1 "$i" onelineramino.seqs > tempmorethanone.fa
+leng=`wc -l tempmorethanone.fa|awk '{print $1}'`
+
+for ini in `seq 2 2 $leng`
+do
+header=`head -n"$ini" tempmorethanone.fa|tail -n2|head -n1`
+seq1=`head -n"$ini" tempmorethanone.fa|tail -n1`
+seq1len=`echo $seq1|wc -c`
+needle -asequence asis:$ref -bsequence asis:$seq1 -gapopen 10.0 -gapextend 0.5 -outfile temprefneedle
+sco1=`grep Score temprefneedle |awk '{print $3}'`
+q1len=`grep "Length: " temprefneedle|awk '{print $3}'`
+score1=`echo $sco1 $q1len|awk '{print $1/$2}'`
+echo -e "$seq1\t$score1"
+if (( $(echo "$score1 > $score" |bc -l) ))
+then
+score=$score1
+seq=$seq1
+seqlen=$seq1len
+accession=$header
+fi
+done
+
+echo -e "$accession\n$seq" >> "$gene"_"$clade"_orf.fa
+fi
+done
+done
+rm temp*
+cd ../..
+done
