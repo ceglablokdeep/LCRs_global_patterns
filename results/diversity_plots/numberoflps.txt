@@ -1,0 +1,13 @@
+Afrotheria	10970
+Amphibia	8575
+Artiodactyla	35069
+Aves	70208
+Carnivora	63396
+Chiroptera	24465
+Lagomorpha	6677
+Marsupialia	18069
+Perissodactyla	8216
+Primates	62207
+Rodentia	55394
+Squamata	24349
+Testudines	12838

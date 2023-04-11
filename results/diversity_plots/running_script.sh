@@ -674,3 +674,4 @@ echo 'legend("topleft",legend=groups[clade],fill=col13rainbow[clade],col=col13ra
 echo 'dev.off()' >> pairwise_richness_specieswise70.r
 echo '}' >> pairwise_richness_specieswise70.r
 Rscript pairwise_richness_specieswise70.r
+
