@@ -1,0 +1,1 @@
+This directory contains the bedtools fisher results in a clade-wise manner. All the genes having PSSs and LCRs are selected and an overlap of PSSs and LCRs is studied using bedtools fisher.
