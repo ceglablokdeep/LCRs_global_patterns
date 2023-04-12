@@ -17,7 +17,7 @@ tt=paste('Density distribution on normalized gene position in',cname,'clade',sep
 plot(t$Alignment_coverage/20,type='l',col="darkorchid4",lwd=3,ylim=c(0,0.05),xlab="Normalized gene position",ylab="Density",main=tt,cex.main=2.5,cex.lab=2,cex.axis=2)
 lines(t$Positive_sites,lwd=3,col="hotpink2")
 lines(t$LCRs_location,lwd=3,col="salmon2")
-legend(80,0.03,box.col="white",bg ="white", box.lwd =0,legend=c("Alignment coverage", "Positive sites","LCRs location"),fill = c("darkorchid4","hotpink2","salmon2"),cex=2)
+legend(80,0.03,box.col="white",bg ="white", box.lwd =0,legend=c("Alignment coverage/20", "Positive sites","LCRs location"),fill = c("darkorchid4","hotpink2","salmon2"),cex=2)
 dev.off()
 library(corrplot)
 b3=t[,-1]
