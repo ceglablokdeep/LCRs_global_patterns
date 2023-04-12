@@ -95,7 +95,7 @@ dev.off()
 ylim <- range(0,max(ps$V2,prpure$V2)+0.01)
 jpeg(paste('overlap_of_pure_repeats_and_pssites_in_all_genes.jpeg',sep=''),width=28,height=18,units="in",res=300)
 par(mar=c(6,7,5,2))
-plot(1, type = "n", xlab = "",ylab = "", xlim = xlim, ylim = ylim,main="Distribution of low-complexity regions of > 70 % purity and positively selected sites on normalized gene position",cex.axis=2,cex.main=3,xaxt='n')
+plot(1, type = "n", xlab = "",ylab = "", xlim = xlim, ylim = ylim,main="Distribution of exact low-complexity regions and positively selected sites on normalized gene position",cex.axis=2,cex.main=3,xaxt='n')
 for (i in seq(0,100,5)){abline(v=i,lty=2,lwd=0.6,col="gray50")}
 axis(side=1, at=seq(2.5,97.5, 5), labels=c("(0,5]","(5,10]","(10,15]","(15,20]","(20,25]","(25,30]","(30,35]","(35,40]","(40,45]","(45,50]","(50,55]","(55,60]","(60,65]","(65,70]","(70,75]","(75,80]","(80,85]","(85,90]","(90,95]","(95,100]"),cex.axis=1.3)
 for(i in 1:dim(ps)[1]){
