@@ -18,6 +18,7 @@ rm temp.bed
 ####the output of PAML sitemodel.outresults_together.txt has amino acid coordinates, we need to convert it to codon aligned coordinates
 awk '{print $1"_"$2,$3*3,($3*3)+2}' OFS='\t' sitemodel.outresults_together.txt > sitemodelcoordinates
 sed -i 's/rodents/rodentia/g' sitemodelcoordinates
+sed -i 's/carnivore/carnivora/g' sitemodelcoordinates
 paste <(awk '{print $1}' sitemodelcoordinates|sort -u) <(awk '{print $1}' mergedfile|sort -u) -d "\n"|sort|uniq -c|awk '$1>1{print $2}'|sed '/^$/d' > common
 
 rm -f lengthfile.bed
