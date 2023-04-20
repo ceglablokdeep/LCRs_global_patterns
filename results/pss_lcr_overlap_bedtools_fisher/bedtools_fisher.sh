@@ -41,6 +41,8 @@ grep "$j\b" sitemodelcoordinates > a.bed
 res=`bedtools fisher -a a.bed -b b.bed -g g.bed|tail -n1`
 echo -e "$j\t$res" >> fisher_result
 done < common
+
+rm a.bed b.bed g.bed
 ## Second p-value is about the favor of occuring together.
 awk '$3<0.05{print $1,$3}' fisher_result OFS="\t"|sed 's/_/\t/g'|sed 's/ /\t/g' |sed -rn 's/./\u&/1p' > positive_sites_favoured_repeats
 ##The below command capitalizes the first alphabet
